@@ -85,6 +85,10 @@ app.get('/mapData', (req, res) => {
 })
 
 
-app.use(express.static(__dirname + "/public"));
+app.get('/', (req, res) => {
+	res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
+})
+
+app.use(express.static(path.join(__dirname, 'build')))
 prefetchData()
 app.listen(port, () => { console.log('david dyke roh') });
