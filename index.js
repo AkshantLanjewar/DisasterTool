@@ -5,6 +5,7 @@ const parseKML = require('parse-kml')
 const axios = require('axios')
 const d3 = require('d3-node')
 const { parse } = require('rss-to-json');
+const path = require('path');
 
 const port = 4000;
 let geoData = {}
@@ -81,12 +82,12 @@ app.get('/mapData', (req, res) => {
 		addedIds.push(declarations.femaId)
 	}
 
-	return res.json({ type: "FeaturesCollection", features })
+	return res.json({ type: "FeatureCollection", features })
 })
 
 
 app.get('/', (req, res) => {
-	res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
+	res.sendFile(path.resolve(__dirname, './build', 'index.html'));
 })
 
 app.use(express.static(path.join(__dirname, 'build')))

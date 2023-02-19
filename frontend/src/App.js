@@ -33,8 +33,22 @@ function DeckGLLayer(props) {
 }
 
 function App() {
+  const [layers, setLayers] = useState([])
+
   useEffect(() => {
-    
+    fetch('/mapData')
+    .then(res => res.json)
+    .then(data => {
+      let newLayers = [{
+        id: 'map',
+        data: data,
+        filled: true,
+        getFillColor: [255, 99, 71, 0.5],
+        getLineColor: 'white'
+      }]
+      setLayers([...newLayers])
+    })
+
   }, [])
 
   return (
