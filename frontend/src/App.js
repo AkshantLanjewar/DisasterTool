@@ -37,15 +37,18 @@ function App() {
 
   useEffect(() => {
     fetch('/mapData')
-    .then(res => res.json)
+    .then(res => res.json())
     .then(data => {
-      let newLayers = [{
-        id: 'map',
-        data: data,
+      let newLayers = [new GeoJSON({
+        id: 'airports',
+        data: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_airports.geojson',
+        // Styles
         filled: true,
-        getFillColor: [255, 99, 71, 0.5],
-        getLineColor: 'white'
-      }]
+        pointRadiusMinPixels: 2,
+        pointRadiusScale: 2000,
+        getPointRadius: 11,
+        getFillColor: [200, 0, 80, 180],
+      })]
       setLayers([...newLayers])
     })
 
@@ -61,7 +64,7 @@ function App() {
         }}
       >
         <DeckGLLayer
-          layers={[]}
+          layers={layers}
         />
       </Map>
     </div>
