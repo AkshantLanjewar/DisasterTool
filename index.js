@@ -1,20 +1,21 @@
 const express = require("express");
 const app = express();
-const fetch = require('node-fetch')
 const fs = require('fs')
 const parseKML = require('parse-kml')
-const csv = require('fast-csv')
+const axios = require('axios')
 const d3 = require('d3-node')
 const { parse } = require('rss-to-json');
 
 const port = 4000;
 
+const geoData = JSON.parse(fs.readFileSync('./county.geo.json'))
 async function fetchData(url, name) {
-	let settings = { method: "GET" }
-	fetch(url, settings)
-		.then(res => res.json())
-		.then((json) => {
-			fs.writeFileSync(name, JSON.stringify(json))
+	axios({
+		method: "get",
+		url: url
+	})
+		.then((penis) => {
+			fs.writeFileSync(name, JSON.stringify(penis.data))
 		})
 }
 
@@ -34,24 +35,23 @@ function prefetchData() {
 }
 
 function pointInFeature(feature, lat, long) {
-  let fakeCollection = {
-    type: "FeatureCollection",
-    features: [feature]
-  }
+	let fakeCollection = {
+		type: "FeatureCollection",
+		features: [feature]
+	}
 
-  return d3.geoContains(fakeCollection, [lat, long])
+	return d3.d3.geoContains(fakeCollection, [lat, long])
 }
 
 function grabGeojsonFeature(declaration) {
-  const geoData = JSON.parse(fs.readFileSync('./us-county-boundaries.geojson'))
-  const geoFeatures = geoData.features
+	const geoFeatures = geoData.features
 
-  for(let i = 0; i < geoFeatures.length; i++) {
-    let feature = geoFeatures[i]
-    let countyName = feature.properties.name.toLowerCase()
-    if(countyName === declaration.county)
-      return feature
-  }
+	for (let i = 0; i < geoFeatures.length; i++) {
+		let feature = geoFeatures[i]
+		let countyName = feature.properties.NAME10.toLowerCase()
+		if (countyName === declaration.county)
+			return feature
+	}
 }
 
 function mapToFire(declaration, geoCounty, fn) {
@@ -59,23 +59,23 @@ function mapToFire(declaration, geoCounty, fn) {
 	const stream = fs.createReadStream("./nasa_fire.csv");
 	const rl = readline.createInterface({ input: stream });
 	let data = [];
-	 
-	rl.on("line", (row) => {
-	    data.push(row.split(","));
-	});
-	 
-	rl.on("close", () => {
-	    const header = data[0]
-  		for(let i = 1; i < data.length; i++) {
-  			let point = data[i]
-  			let lat = point[0]
-  			let long = point[1]
-  			let brightness = point[2]
-        
-        console.log(pointInFeature(geoCounty, lat, long))
-  		}
 
-		return true
+	rl.on("line", (row) => {
+		data.push(row.split(","));
+	});
+
+	rl.on("close", () => {
+		for (let i = 1; i < data.length; i++) {
+			let point = data[i]
+			let lat = point[0]
+			let long = point[1]
+			let brightness = point[2]
+
+			if(pointInFeature(geoCounty, lat, long))
+				console.log("DICK!")
+		}
+
+		fn()
 	});
 }
 
@@ -106,20 +106,18 @@ app.get('/mapData', (req, res) => {
 
 	for (let i = 0; i < selectedDeclarations.length; i++) {
 		let decleration = selectedDeclarations[i]
-    let geoCounty = grabGeojsonFeature(decleration)
-    
+		let geoCounty = grabGeojsonFeature(decleration)
+		
 		switch (decleration.type) {
 			case "Fire":
-        mapToFire(decleration, geoCounty, () => {
-					
+				mapToFire(decleration, geoCounty, () => {
+					return res.send("dick!")
 				})
 				break
 			default:
 				break
 		}
 	}
-
-  return res.text("Swag")
 })
 
 
