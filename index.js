@@ -7,8 +7,8 @@ const d3 = require('d3-node')
 const { parse } = require('rss-to-json');
 
 const port = 4000;
+let geoData = {}
 
-const geoData = JSON.parse(fs.readFileSync('./county.geo.json'))
 async function fetchData(url, name) {
 	axios({
 		method: "get",
@@ -19,28 +19,12 @@ async function fetchData(url, name) {
 		})
 }
 
-async function parseXml(url, name) {
-	const unparsed = await parseKML.toJson(url)
-	fs.writeFileSync(name, JSON.stringify(unparsed))
-}
-
-function getEarthquakeLocation(name, earthquakeNumber) {
-	return (name.features.earthquakeNumber.geometry.coordinates)
-}
-
 function prefetchData() {
 	fetchData("https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries", "fema.json")
 
 	fetchData("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson", "USEarthquakes.json")
-}
 
-function pointInFeature(feature, lat, long) {
-	let fakeCollection = {
-		type: "FeatureCollection",
-		features: [feature]
-	}
-
-	return d3.d3.geoContains(fakeCollection, [lat, long])
+	geoData = JSON.parse(fs.readFileSync('./county.geo.json'))
 }
 
 function grabGeojsonFeature(declaration) {
@@ -48,35 +32,10 @@ function grabGeojsonFeature(declaration) {
 
 	for (let i = 0; i < geoFeatures.length; i++) {
 		let feature = geoFeatures[i]
-		let countyName = feature.properties.NAME10.toLowerCase()
-		if (countyName === declaration.county)
+		let countyName = feature.properties.NAME10.toLowerCase().trim()
+		if(countyName === declaration.county.toLowerCase())
 			return feature
 	}
-}
-
-function mapToFire(declaration, geoCounty, fn) {
-	const readline = require("readline");
-	const stream = fs.createReadStream("./nasa_fire.csv");
-	const rl = readline.createInterface({ input: stream });
-	let data = [];
-
-	rl.on("line", (row) => {
-		data.push(row.split(","));
-	});
-
-	rl.on("close", () => {
-		for (let i = 1; i < data.length; i++) {
-			let point = data[i]
-			let lat = point[0]
-			let long = point[1]
-			let brightness = point[2]
-
-			if(pointInFeature(geoCounty, lat, long))
-				console.log("DICK!")
-		}
-
-		fn()
-	});
 }
 
 app.get('/mapData', (req, res) => {
@@ -91,12 +50,14 @@ app.get('/mapData', (req, res) => {
 		let county = declaration.designatedArea.trim().split(" ")
 		let title = declaration.declarationTitle
 		let type = declaration.incidentType
+		let femaId = declaration.disasterNumber
 		county.pop()
 
 		let disaster = {
 			title,
 			county: county.join(" "),
-			type
+			type,
+			femaId: femaId
 		}
 
 		let endDate = declaration.incidentEndDate
@@ -104,26 +65,26 @@ app.get('/mapData', (req, res) => {
 			selectedDeclarations.push(disaster)
 	}
 
+	let features = []
+	let addedIds = []
 	for (let i = 0; i < selectedDeclarations.length; i++) {
 		let decleration = selectedDeclarations[i]
+		if(addedIds.includes(decleration.femaId))
+			continue
+
 		let geoCounty = grabGeojsonFeature(decleration)
-		
-		switch (decleration.type) {
-			case "Fire":
-				mapToFire(decleration, geoCounty, () => {
-					return res.send("dick!")
-				})
-				break
-			default:
-				break
-		}
+		if(geoCounty === undefined)
+			continue
+
+		geoCounty.properties.declaration = decleration
+		features.push(geoCounty)
+		addedIds.push(declarations.femaId)
 	}
+
+	return res.json({ type: "FeaturesCollection", features })
 })
-
-
-
 
 
 app.use(express.static(__dirname + "/public"));
 prefetchData()
-app.listen(port);
+app.listen(port, () => { console.log('david dyke roh') });
