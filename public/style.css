@@ -1,0 +1,9 @@
+.text{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 50px;
+  font-weight: 600;
+  color: #ff5900;
+  text-align: center;
+  width: 100%;
+  margin: 25px;
+}
