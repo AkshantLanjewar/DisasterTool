@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {Map} from '@esri/react-arcgis'
 import {loadArcGISModules} from '@deck.gl/arcgis';
+import { GeoJsonLayer } from '@deck.gl/layers'
 
 const INITIAL_VIEW_STATE = {
   longitude: -122,
@@ -37,15 +38,19 @@ function App() {
 
   useEffect(() => {
     fetch('/mapData')
-    .then(res => res.json)
+    .then(res => res.json())
     .then(data => {
-      let newLayers = [{
-        id: 'map',
-        data: data,
+      let newLayers = [new GeoJsonLayer({
+        id: 'fires',
+        data: '/mapData',
+        // Styles
         filled: true,
-        getFillColor: [255, 99, 71, 0.5],
-        getLineColor: 'white'
-      }]
+        pointRadiusMinPixels: 2,
+        pointRadiusScale: 2000,
+        getPointRadius: 11,
+        getFillColor: [200, 0, 80, 180],
+      })]
+
       setLayers([...newLayers])
     })
 
@@ -61,7 +66,7 @@ function App() {
         }}
       >
         <DeckGLLayer
-          layers={[]}
+          layers={layers}
         />
       </Map>
     </div>

@@ -68,6 +68,7 @@ app.get('/mapData', (req, res) => {
 
 	let features = []
 	let addedIds = []
+	let types = []
 	for (let i = 0; i < selectedDeclarations.length; i++) {
 		let decleration = selectedDeclarations[i]
 		if(addedIds.includes(decleration.femaId))
@@ -80,7 +81,12 @@ app.get('/mapData', (req, res) => {
 		geoCounty.properties.declaration = decleration
 		features.push(geoCounty)
 		addedIds.push(declarations.femaId)
+		if(types.includes(decleration.type))
+			continue
+		types.push(decleration.type)
 	}
+
+	console.log(types)
 
 	return res.json({ type: "FeatureCollection", features })
 })
