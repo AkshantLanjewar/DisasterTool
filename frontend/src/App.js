@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {Map} from '@esri/react-arcgis'
 import {loadArcGISModules} from '@deck.gl/arcgis';
+import { GeoJsonLayer } from '@deck.gl/layers'
 
 const INITIAL_VIEW_STATE = {
   longitude: -122,
@@ -39,9 +40,9 @@ function App() {
     fetch('/mapData')
     .then(res => res.json())
     .then(data => {
-      let newLayers = [new GeoJSON({
-        id: 'airports',
-        data: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_airports.geojson',
+      let newLayers = [new GeoJsonLayer({
+        id: 'fires',
+        data: '/mapData',
         // Styles
         filled: true,
         pointRadiusMinPixels: 2,

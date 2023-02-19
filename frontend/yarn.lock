@@ -29,7 +29,7 @@
     jsonpointer "^5.0.0"
     leven "^3.1.0"
 
-"@arcgis/core@^4.25.5":
+"@arcgis/core@^4.21.0":
   version "4.25.5"
   resolved "https://registry.yarnpkg.com/@arcgis/core/-/core-4.25.5.tgz#8737b739c542ad060f55949b2b0ffc746a1b70fb"
   integrity sha512-c4KgUeXLn11wHoorR4/6UmYxg/sYEJolbWqpio82yCLE0gPBGdXAOSZEgnQ6IuGdjiEU3AJyZg3r16aN80itKQ==
@@ -1384,7 +1384,7 @@
     lodash-es "4.17.21"
     sortablejs "1.15.0"
 
-"@esri/react-arcgis@^5.2.0":
+"@esri/react-arcgis@^5.1.0":
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/@esri/react-arcgis/-/react-arcgis-5.2.0.tgz#fcdb2ff3ddbb85b66bd5f082e0335c5c95ad120c"
   integrity sha512-85sSih2lI4ISB9ISu77fxIPUg32UaZjM+SrwaJkxwGzdKnmyhdBqOHMm3kTqjLGPCmuDk9xtEDJWqdxxskkLzQ==
@@ -4174,7 +4174,7 @@ decimal.js@^10.2.1:
   resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.4.3.tgz#1044092884d245d1b7f65725fa4ad4c6f781cc23"
   integrity sha512-VBBaLc1MgL5XpzgIP7ny5Z6Nx3UrRkIViUkPUdtl9aya5amy3De1gsUUSB1g3+3sExYNjCAsAznmukyxCb1GRA==
 
-deck.gl@^8.8.24:
+deck.gl@^8.8.0:
   version "8.8.24"
   resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-8.8.24.tgz#d6e8e15c46524195722252b5a3c3e0999be20b7b"
   integrity sha512-2EysFdxSenBh1NUZQRwp1V8XdCsG2vFWHpRUysHhcZGgfC4m5CZwulLE1gL5Wpcki1p30IGUZG7a6hyIbM9Gtg==
