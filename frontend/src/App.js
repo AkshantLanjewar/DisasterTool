@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {Map} from '@esri/react-arcgis'
 import {loadArcGISModules} from '@deck.gl/arcgis';
 import { GeoJsonLayer } from '@deck.gl/layers'
+import './App.css'
 
 const INITIAL_VIEW_STATE = {
   longitude: -122,
@@ -68,6 +69,10 @@ function App() {
           layers={layers}
         />
       </Map>
+
+      <div className="mapContainer">
+
+      </div>
     </div>
   );
 }
